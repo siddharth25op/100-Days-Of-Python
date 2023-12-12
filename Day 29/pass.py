@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 from random import choice, randint, shuffle
 import pyperclip
+import json
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
 
@@ -29,17 +30,52 @@ def data():
     website = websiteInput.get()
     email = emailInput.get()
     password = passwordInput.get()
+    new_data = {
+        website: {
+            "email": email,
+            "password": password
+        }
+    }
 
     if not website or not email or not password:
         messagebox.showinfo(title="Invalid Entry", message="Empty entry not allowed")
     else:
         is_ok = messagebox.askokcancel(title="Confirm", message="Are you sure you want to save these info?")
         if is_ok:
-            with open("data.txt", mode="a") as file:
-                file.write(f"{website} | {email} | {password}\n")
+            try:
+                with open("data.json", mode="r") as file:
+                    #Reading old data
+                    hui = json.load(file)
+            except FileNotFoundError:
+                with open("data.json", mode="w") as file:
+                    json.dump(new_data, file, indent=4)
+            else:
+                hui.update(new_data)
+                with open("data.json", mode="w") as file:
+                    json.dump(hui, file, indent=4)
+            finally:
                 websiteInput.delete(0, END)
                 passwordInput.delete(0, END)
                 emailInput.delete(0, END)
+######################################################################
+
+
+def searchdata():
+    website = websiteInput.get()
+    email = emailInput.get()
+    try:
+        with open("data.json", "r") as file:
+            poke = json.load(file)
+    except FileNotFoundError:
+        messagebox.showinfo(title="Result", message="There is no data file.")
+    else:
+        if not website or not email:
+            messagebox.showinfo(title="Invalid Entry", message="Empty entry not allowed")
+        elif email == poke.get(f"{website}", {}).get("email"):
+            password = poke[website]["password"]
+            messagebox.showinfo(title="Details", message=f"website: {website}\nemail: {email}\npassword: {password}")
+        else:
+            messagebox.showinfo(title="Result", message="Email associated with the website not found.")
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -72,5 +108,8 @@ genPass.grid(row=3, column=2)
 
 addButton = Button(text="Add", width=38, command=data)
 addButton.grid(row=4, column=1, columnspan=2)
+
+searchButton = Button(text="Search Data", command=searchdata)
+searchButton.grid(row=1, column=2)
 
 window.mainloop()
