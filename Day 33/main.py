@@ -5,8 +5,8 @@ import time
 
 MY_LAT = 22.178200
 MY_LON = 76.074097
-MY_EMAIL = "minetrio25@gmail.com"
-MY_PASSWORD = "zeabquanjkxgmekh"
+MY_EMAIL = ""
+MY_PASSWORD = ""
 
 
 def can_iss_be_seen():
@@ -44,6 +44,6 @@ while True:
         connection.login(MY_EMAIL, MY_PASSWORD)
         connection.sendmail(
             from_addr=MY_EMAIL,
-            to_addrs="Siddharthjainj25@gmail.com",
+            to_addrs="",
             msg="Subject: ISS Update\n\nIss is above you in the sky."
         )
